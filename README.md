@@ -7,8 +7,14 @@ This is a simple Express server using SQLite databases for demonstration purpose
 
 ## Prerequisites:
 Before you begin, make sure you have the following installed on your machine:
+
+
 Northwind Database SQLite -> https://github.com/jpwhite3/northwind-SQLite3
+
+
 Node.js
+
+
 Git
 
 
