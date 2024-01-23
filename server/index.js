@@ -157,42 +157,43 @@ app.get('/employees', (_, res) => {
 // Insert a new employee into the db
 app.post('/create_employee', (req, res) => {
    const {
-      last_name,
-      first_name,
-      title,
-      title_of_courtesy,
-      birth_date,
-      hire_date,
-      address,
-      city,
-      region,
-      postal_code,
-      country,
-      home_phone,
-      extension,
-      notes,
-      reports_to,
-      photo_path
+      LastName,
+      FirstName,
+      Title,
+      TitleOfCourtesy,
+      BirthDate,
+      HireDate,
+      Address,
+      City,
+      Region,
+      PostalCode,
+      Country,
+      HomePhone,
+      Extension,
+      Notes,
+      ReportsTo,
+      PhotoPath
    } = req.body;
 
    const data = [
-      last_name,
-      first_name,
-      title,
-      title_of_courtesy,
-      birth_date,
-      hire_date,
-      address,
-      city,
-      region,
-      postal_code,
-      country,
-      home_phone,
-      extension,
-      notes,
-      reports_to,
-      photo_path
-   ]
+      LastName,
+      FirstName,
+      Title,
+      TitleOfCourtesy,
+      BirthDate,
+      HireDate,
+      Address,
+      City,
+      Region,
+      PostalCode,
+      Country,
+      HomePhone,
+      Extension,
+      Notes,
+      ReportsTo,
+      PhotoPath
+   ];
+
 
    const query = `
          INSERT INTO employees (
