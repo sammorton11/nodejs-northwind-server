@@ -28,16 +28,15 @@ cd express-sqlite-server
 ## Install dependencies:
 npm install
 
-Create a .env file in the root directory and set the following environment variables:
-PERSONAL_DB='path/to/your/personal/database.db'
-
 
 NORTHWIND_DB='path/to/your/northwind/database.db'
 Replace path/to/your/personal/database.db and path/to/your/northwind/database.db with the paths to your SQLite databases.
 
+
 ## Start the server:
 node index.js
 The server will be running at http://localhost:3000.
+
 
 ## Available Endpoints
 
