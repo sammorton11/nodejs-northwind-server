@@ -42,21 +42,6 @@ The server will be running at http://localhost:3000.
 ## Available Endpoints
 
 
-/users: Get all users
-
-
-/users: Add a new user (POST request with JSON body)
-
-
-/users: Delete all users (DELETE request)
-
-
-/users_orders: Get users with their orders
-
-
-/orders: Add a new order (POST request with JSON body)
-
-
 /suppliers_with_products: Get suppliers and their products from Northwind database
 
 
