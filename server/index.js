@@ -1,14 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
-
 const app = express();
 const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-const db = new sqlite3.Database('C:/Users/smorton/Desktop/SQLite/mydatabase.db');
-const northwindDB = new sqlite3.Database('C:/Users/smorton/Desktop/SQLite/northwind.db');
+const dotenv = require('dotenv');
+dotenv.config();
+
+const personalDBPath = process.env.PERSONAL_DB;
+const northwindDBPath = process.env.NORTHWIND_DB;
+
+const db = new sqlite3.Database(personalDBPath);
+const northwindDB = new sqlite3.Database(northwindDBPath);
 
 db.serialize(() => {
    db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)');
