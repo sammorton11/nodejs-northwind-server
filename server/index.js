@@ -281,6 +281,30 @@ app.get('/supplier/:id/products', (req, res) => {
 });
 
 
+app.get('/products_total_sales', (_, res) => {
+   const query = `
+      SELECT Products.ProductID, Products.ProductName, SUM(OrderDetails.Quantity * OrderDetails.UnitPrice) AS TotalSales
+      FROM Products
+      JOIN "Order Details" as OrderDetails ON Products.ProductID = OrderDetails.ProductID
+      GROUP BY Products.ProductID, Products.ProductName
+      ORDER BY TotalSales DESC;
+   `
+
+   try {
+      northwindDB.all(query, (err, rows) => {
+         if (err) {
+            console.log(err);
+            res.status(400).json({ error: err.message });
+         } else {
+            res.status(200).json(rows);
+         }
+      });
+   } catch(error) {
+      console.log(error);
+   }
+});
+
+
 // Start that dang server
 app.listen(port, () => {
    console.log(`Server is running at http://localhost:${port}`);
