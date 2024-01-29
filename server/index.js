@@ -9,109 +9,14 @@ app.use(express.json());
 const dotenv = require('dotenv');
 dotenv.config();
 
-const personalDBPath = process.env.PERSONAL_DB;
 const northwindDBPath = process.env.NORTHWIND_DB;
 
-const db = new sqlite3.Database(personalDBPath);
 const northwindDB = new sqlite3.Database(northwindDBPath);
-
-db.serialize(() => {
-   db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)');
-   db.run('CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY, user_id INTEGER, total_amount REAL, FOREIGN KEY (user_id) REFERENCES users(id))');
-});
 
 // ROUTES
 app.get('/', (_, res) => {
    res.json({ message: 'We are live!' });
 });
-
-
-// My SQLite database - just users and orders tables.
-// Get them users 
-app.get('/users', (_, res) => {
-   db.all('SELECT * FROM users', (err, rows) => {
-      if (err) {
-         res.status(500).json({ error: err.message });
-         return;
-      }
-      res.json(rows);
-   });
-});
-
-// Insert user if not in db
-app.post('/users', (req, res) => {
-   const { name } = req.body;
-   db.get('SELECT * FROM users WHERE name = ?', [name], (err, row) => {
-      if (err) {
-         console.log(err);
-         res.status(400).json({ error: err.message });
-         return;
-      }
-
-      if (row) {
-         res.status(400).json({ error: "User already in db." });
-         return;
-      }
-
-      db.run('INSERT INTO users (name) VALUES (?)', [name], function(err) {
-         if (err) {
-            console.log(err);
-            res.status(400).json({ error: err.message });
-            return;
-         }
-         res.status(200).json({ message: "Success!" });
-      });
-   });
-});
-
-// Delete all users
-app.delete('/users', (_, res) => {
-   db.run('DELETE FROM users', function(err) {
-      if (err) {
-         console.log(err);
-         res.status(400).json({ error: err.message });
-         return;
-      }
-      res.status(400).json({ message: "Delete all successful!" });
-   });
-});
-
-
-// Get the users id, name, and the total for their orders from the orders and users tables and join them.
-app.get('/users_orders', (_, res) => {
-   try {
-      db.all('SELECT users.id AS user_id, users.name, orders.total_amount FROM users INNER JOIN orders ON users.id = orders.user_id', function(err, rows) {
-         if (err) {
-            console.log(err);
-            res.status(500).json({ error: err.message });
-            return;
-         }
-         res.status(200).json(rows);
-      });
-   } catch (error) {
-      console.log(error);
-   }
-});
-
-// Insert an order
-app.post('/orders', (req, res) => {
-   try {
-      const { user_id, total_amount } = req.body;
-      console.log("Order request", user_id, total_amount);
-
-      db.run('INSERT INTO orders (user_id, total_amount) VALUES (?, ?)', [user_id, total_amount], function(err) {
-         if (err) {
-            console.log(err);
-            res.status(400).json({ error: err.message })
-            return;
-         }
-         res.json({ message: "Order inserted successfully", order_id: this.lastID });
-      });
-   } catch (error) {
-      console.log(error);
-   }
-});
-
 
 
 // NORTHWIND DATABASE ENDPOINTS
@@ -230,6 +135,26 @@ app.post('/create_employee', (req, res) => {
    }
 });
 
+app.get('/get_customers_by_country', (req, res) => {
+   try {
+      const { country } = req.body;
+      const query = `
+         SELECT * FROM Customers WHERE Country = ?
+      `
+      northwindDB.all(query, [country], (err, rows) => {
+         if (err) {
+            console.log(err);
+            res.status(400).json({ error: err.message })
+            return;
+         }
+         res.status(200).json(rows);
+      });
+   } catch (error) {
+      console.log(error);
+   }
+
+});
+
 // Get a products name, category, descripton, Unit Price, and units in stock
 app.get('/search_products_by_category', (req, res) => {
    try {
@@ -289,7 +214,6 @@ app.get('/products_total_sales', (_, res) => {
       GROUP BY Products.ProductID, Products.ProductName
       ORDER BY TotalSales DESC;
    `
-
    try {
       northwindDB.all(query, (err, rows) => {
          if (err) {
@@ -301,6 +225,33 @@ app.get('/products_total_sales', (_, res) => {
       });
    } catch(error) {
       console.log(error);
+   }
+});
+
+app.get('/customer_order_count', (_, res) => {
+   const query = `
+      SELECT 
+         Customers.CustomerID AS ID,
+         Customers.ContactName AS CustomerName,
+         Customers.City AS CustomerCity,
+         COUNT(Orders.OrderID) AS OrderCount
+      FROM Orders 
+      JOIN Customers ON Customers.CustomerID = Orders.CustomerID
+      GROUP BY ID
+      ORDER BY OrderCount DESC; 
+   `
+   
+   try {
+      northwindDB.all(query, (err, rows) => {
+         if (err) {
+            console.log(err);
+            res.status(400).json({error: err.message});
+         } else {
+            res.status(200).json(rows)
+         }
+      });
+   } catch (error) {
+      console.log(error); 
    }
 });
 
