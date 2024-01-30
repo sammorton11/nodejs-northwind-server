@@ -1,0 +1,9 @@
+/server/node_modules/
+/server/package-lock.json
+
+/myapp/node_modules/
+/myapp/package-lock.json
+
+/server/northwind.db
+
+/server/.env

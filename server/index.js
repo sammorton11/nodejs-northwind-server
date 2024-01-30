@@ -11,7 +11,25 @@ dotenv.config();
 
 const northwindDBPath = process.env.NORTHWIND_DB;
 
-const northwindDB = new sqlite3.Database(northwindDBPath);
+console.log("PATH FOR DB:", northwindDBPath);
+
+const knex = require('knex')({
+  client: 'sqlite3',
+  connection: {
+    filename: northwindDBPath,
+  },
+  useNullAsDefault: true,
+});
+
+console.log("knex count", knex.count);
+
+const northwindDB = new sqlite3.Database(northwindDBPath, (err) => {
+  if (err) {
+    console.error(err.message);
+  } else {
+    console.log('Connected to the northwind database.');
+  }
+});
 
 // ROUTES
 app.get('/', (_, res) => {
